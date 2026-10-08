@@ -14,7 +14,7 @@ First confirm the Zenrows MCP tools (`scrape`, `browser_*`) are available in thi
 - Tools missing entirely: the MCP server is not connected. Ask the user to run `openclaw plugins inspect zenrows` and check that the plugin is installed and enabled. If it is, Zenrows is probably not connected yet: OpenClaw leaves an OAuth server out of the session until it is authorized. Go to the login step below.
 - Tools present: call `scrape(url='https://httpbin.io/get', response_type='plaintext', mode='auto')` and branch:
   - 200 with a body: Zenrows is working. Go to step 2.
-  - 401, or an `AUTH` error: the Zenrows login is missing or expired. Ask the user to open the OpenClaw Control UI (`openclaw dashboard`), go to the Zenrows plugin page, choose **Connect** under **Accounts**, sign in to Zenrows and approve access, then start a new session and retry. With the manual MCP setup instead of the plugin, the command is `openclaw mcp login zenrows`. Do not ask for an API key.
+  - 401, or an `AUTH` error: the Zenrows login is missing or expired. Ask the user to run `openclaw mcp set zenrows '{"url":"https://mcp.zenrows.com/mcp","transport":"streamable-http","auth":"oauth"}'` and then `openclaw mcp login zenrows`, open the printed link, sign in to Zenrows and approve access, then start a new session and retry. If the `mcp.servers` entry already exists, `openclaw mcp login zenrows` alone is enough. Do not ask for an API key.
 
 ## 2. First successful scrape
 

@@ -32,7 +32,14 @@ Published on ClawHub as [`@zenrows`](https://clawhub.ai/zenrows).
 openclaw plugins install clawhub:@zenrows/openclaw-zenrows
 ```
 
-Then connect your Zenrows account: open the Control UI (`openclaw dashboard`), go to the Zenrows plugin page and choose **Connect** under **Accounts**. Sign in to Zenrows and approve access.
+Then connect your Zenrows account:
+
+```bash
+openclaw mcp set zenrows '{"url":"https://mcp.zenrows.com/mcp","transport":"streamable-http","auth":"oauth"}'
+openclaw mcp login zenrows
+```
+
+Open the link that `openclaw mcp login` prints, sign in to Zenrows and approve access. OpenClaw only offers the sign-in for a server that also has an `mcp.servers` entry, which is why the first command is needed.
 
 Start a new session and ask: "Use Zenrows to fetch https://example.com and tell me the page title."
 
