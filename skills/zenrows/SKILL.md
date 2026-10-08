@@ -19,7 +19,7 @@ Zenrows gives the agent live web data through the Zenrows MCP server: page fetch
 
 The tools below come from the Zenrows MCP server. If they are not available in this session, Zenrows is not connected yet:
 
-- Recommended: install the Zenrows plugin with `openclaw plugins install clawhub:@zenrows/openclaw-zenrows`, then open the Control UI (`openclaw dashboard`), go to the Zenrows plugin page and choose **Connect** under **Accounts**.
+- Recommended: install the Zenrows plugin with `openclaw plugins install clawhub:@zenrows/openclaw-zenrows`, then connect the Zenrows account with `openclaw mcp set zenrows '{"url":"https://mcp.zenrows.com/mcp","transport":"streamable-http","auth":"oauth"}'` and then `openclaw mcp login zenrows`.
 - Manual: add the server to `mcp.servers` in `~/.openclaw/openclaw.json`. See https://docs.zenrows.com/integrations/openclaw.
 
 Do not ask the user to paste an API key into the conversation.
@@ -76,7 +76,7 @@ Hosted browser sessions for multi-step tasks: `browser_navigate`, `browser_click
 ## Errors
 
 - `mode='auto'` already retries with heavier settings internally. Do not build manual retry loops around it.
-- `401` or an `AUTH` code (for example `AUTH002`): Zenrows is not connected or the login expired. Ask the user to reconnect Zenrows: Control UI, Zenrows plugin page, **Accounts**, **Connect** (or `openclaw mcp login zenrows` for the manual setup). Do not ask for a key.
+- `401` or an `AUTH` code (for example `AUTH002`): Zenrows is not connected or the login expired. Ask the user to run `openclaw mcp login zenrows` to reconnect. Do not ask for a key.
 - `429`: the plan's concurrency limit was reached. Wait and retry, or tell the user about their plan limits.
 - `413`: the response is too large. Narrow it with `css_extractor`.
 - `AUTH010` from `extract`: the domain is outside the Extract beta. `fallback_autoparse` (on by default) retries with autoparse. Surface the error only if the user asked for strict extraction.
