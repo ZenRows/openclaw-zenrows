@@ -2,6 +2,7 @@
 name: zenrows
 description: Fetch live web pages, extract structured data and run browser automation through the official Zenrows MCP server. Use when the agent needs the current content of a URL, specific fields from a page, many URLs fetched as one job, or a multi-step browser session (login, forms, pagination), especially for JavaScript-heavy pages where a plain fetch returns little. Requires the Zenrows plugin or a Zenrows MCP server configured in OpenClaw, and a Zenrows account.
 metadata:
+  title: Zenrows
   openclaw:
     emoji: "\U0001F310"
     homepage: https://docs.zenrows.com/integrations/openclaw
