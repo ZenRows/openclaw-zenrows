@@ -80,7 +80,7 @@ Hosted browser sessions for multi-step tasks: `browser_navigate`, `browser_click
 - `401` or an `AUTH` code (for example `AUTH002`): Zenrows is not connected or the login expired. Ask the user to run `openclaw mcp login zenrows` to reconnect. Do not ask for a key.
 - `429`: the plan's concurrency limit was reached. Wait and retry, or tell the user about their plan limits.
 - `413`: the response is too large. Narrow it with `css_extractor`.
-- `AUTH010` from `extract`: the domain is outside the Extract beta. `fallback_autoparse` (on by default) retries with autoparse. Surface the error only if the user asked for strict extraction.
+- `REQS007` (or the older `AUTH010`) from `extract`: Extract hasn't prepared that domain yet. `fallback_autoparse` (on by default) retries with autoparse. Surface the error only if the user asked for strict extraction.
 - Look up any other error code at https://docs.zenrows.com.
 
 ## Concurrency
