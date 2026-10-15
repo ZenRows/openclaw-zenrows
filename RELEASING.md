@@ -64,7 +64,7 @@ cd "$(mktemp -d)"
 curl -sSL -o pkg.zip "https://clawhub.ai/api/v1/packages/@zenrows/openclaw-zenrows/download?version=$VERSION"
 mkdir pub repo && unzip -q pkg.zip -d pub
 gh api "repos/ZenRows/openclaw-zenrows/tarball/$SHA" | tar -xz -C repo --strip-components=1
-diff -r repo pub/package && echo identical
+diff -r $(sed -e 's:/$::' -e '/^$/d' -e 's/^/-x /' repo/.clawhubignore) repo pub/package && echo identical
 ```
 
-Anything other than `identical` means the release is not what was merged. Then post the version in #proj-integrations so the Integrations brain picks it up.
+The `-x` flags skip what `.clawhubignore` keeps out of the package (this file among them), so only shipped files are compared. Anything other than `identical` means the release is not what was merged. Then post the version in #proj-integrations so the Integrations brain picks it up.
