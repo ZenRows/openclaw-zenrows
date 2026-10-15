@@ -1,6 +1,6 @@
 {
   "name": "zenrows",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Web data for OpenClaw: scrape, extract and browser automation through the Zenrows MCP server.",
   "author": {
     "name": "Zenrows",
