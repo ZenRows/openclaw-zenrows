@@ -1,30 +1,30 @@
 ---
 name: zenrows-crawl
-description: Collect the content of many pages under one site or section by following internal links from a starting URL. Use when the user wants more than one page, for example "all the docs under /guide" or "every blog post on this site". Not for listing URLs without fetching their content (use zenrows-map), not for a single page (use zenrows-scrape), and not for a list of URLs the user already has (use zenrows-batch).
+description: Collect the URLs, and optionally the pages, behind one start URL by following its links, for example "every product in this category" or "all the posts on this blog". Use when the user has one start page and wants many pages from that site. Not for listing a site's URLs from its sitemap (use zenrows-map), not for a single page (use zenrows-scrape), and not for a list of URLs the user already has (use zenrows-batch).
 ---
 
-# Crawl from a seed URL
+# Crawl from a start URL
 
-Discover and fetch internal pages starting from one seed, staying on the same host and path prefix. The agent runs the loop in conversation.
+Zenrows Crawl runs as a background job: it follows the links in each page up to `depth` hops, keeps the URLs that match your patterns, removes duplicates and stays on the start URL's domain (subdomains included).
 
-## Defaults
-
-- `max_pages`: 25
-- `max_depth`: 2
-- Scope: same host and same path prefix as the seed.
+The user's instructions take precedence over this skill. If they conflict, follow the user.
 
 ## Instructions
 
-1. Confirm the seed URL and, if the user implied limits, the `max_pages` and `max_depth` to use.
-2. Fetch the seed: `scrape(url, mode='auto', outputs='links', response_type='markdown')`. This returns the page content and its links in one call.
-3. Filter the returned links to the same host and the same path prefix as the seed. Drop off-site links, anchors, and already-seen URLs.
-4. Enqueue the surviving links. Repeat steps 2 and 3 for each, increasing depth, until you reach `max_pages` or `max_depth`.
-5. Write each fetched page as one JSON line to `./.zenrows/crawl-<host>-<timestamp>.jsonl`, with at least `{ "url", "depth", "content" }`. Create `./.zenrows/` if it does not exist.
-6. Do not read the whole output file back into context. Summarize from what you fetched, or read it incrementally with `grep` and `head`.
+1. Confirm the start URL and the limits before starting. Each page fetched bills as one scrape, so `max_pages` is the cost control (default 100). `max_items` caps how many URLs are kept (default 100). Without `depth`, the crawl follows links until a limit stops it.
+2. Start the job: `crawl_create(url, max_pages, max_items, depth, include_patterns, exclude_patterns)`.
+   - Use `include_patterns` and `exclude_patterns` (substrings, for example `["/product/"]`) to keep only the URLs the user wants.
+   - Add `output_format='html'` only when the user needs each page's content, not just its URL.
+3. Wait for it: `crawl_wait(crawl_id)`. It returns the status, the counts and the first 20 URLs. If it returns `status: running` with a note, call `crawl_wait` again, or read the partial list with `crawl_results`.
+4. Read every URL with `crawl_results(crawl_id)`. Pass the returned `next_cursor` as `cursor` until it is `null`.
+5. For a page's content (only with `output_format='html'`): `crawl_content(crawl_id, content_id)`, using the `content_url` from a `crawl_results` row. It returns raw HTML, capped by `max_chars`. For markdown, call `scrape` on that page's URL instead.
+6. If the user stops the task, call `crawl_stop(crawl_id)`. Pages already in flight still finish and are billed. A stopped crawl cannot resume.
+7. Summarize from what you read. For a large result, report the count and a sample rather than every URL.
 
 ## Notes
 
-- A crawl multiplies requests, so `max_pages` and `max_depth` are the cost control. Keep them as low as the task allows.
-- Pass `mode='auto'` on every fetch so JavaScript-heavy pages still return content.
-- For URL discovery without fetching content, use the `zenrows-map` skill instead. It is far cheaper.
-- Once the URL list is known (for example from `zenrows-map`), use the `zenrows-batch` skill rather than this loop. Batch submits them as one managed job with server-side retries.
+- `crawl_download` writes a local file only when the MCP server runs on the user's machine. On the hosted server it writes nothing and returns a download URL and a command that needs an API key. Use `crawl_results` instead.
+- `CRAWL_NOT_ENABLED`: Crawl is not enabled for this account. Do not retry; tell the user.
+- `CRAWL_TOO_MANY_CRAWLS`: the account already runs its limit of active jobs (3 by default, shared with Batch). Retry after the `retry_after` seconds in the error.
+- For URL discovery from a sitemap, use the `zenrows-map` skill instead. It costs 1 to 3 requests.
+- Once the URL list is known, use the `zenrows-batch` skill to fetch the pages as one managed job.
