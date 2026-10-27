@@ -35,7 +35,9 @@ Key parameters: `url`, `mode`, `response_type`, `proxy_country`, `css_extractor`
 
 ### `extract`
 
-Structured extraction from one page. Returns JSON. Parameters: `url`, `mode` (`auto`, `autoparse` or `css`), `css_extractor` (required when `mode='css'`), `js_render`, `premium_proxy`, `mode_auto`, `proxy_country`, `wait_for`, `wait`, `fallback_autoparse`.
+Structured extraction from one page. Returns JSON. Parameters: `url`, `mode` (`auto` by default, or `css`; `autoparse` is deprecated), `css_extractor` (required when `mode='css'`), `include_html`, `js_render`, `premium_proxy`, `mode_auto`, `proxy_country`, `wait_for`, `wait`.
+
+`prepare_domain` and `prepared_domain_status` prepare a domain for `extract` when it answers `REQS007` with reason `domain_not_prepared` (see the `zenrows-extract` skill).
 
 On `extract`, `mode` selects the extraction strategy. It is not the `mode` of `scrape`. The adaptive setting on `extract` is the boolean `mode_auto`.
 
@@ -85,7 +87,7 @@ Hosted browser sessions for multi-step tasks: `browser_navigate`, `browser_click
 - `401` or an `AUTH` code (for example `AUTH002`): Zenrows is not connected or the login expired. Ask the user to run `openclaw mcp login zenrows` to reconnect. Do not ask for a key.
 - `429`: the plan's concurrency limit was reached. Wait and retry, or tell the user about their plan limits.
 - `413`: the response is too large. Narrow it with `css_extractor`.
-- `REQS007` (or the older `AUTH010`) from `extract`: Extract hasn't prepared that domain yet. `fallback_autoparse` (on by default) retries with autoparse. Surface the error only if the user asked for strict extraction.
+- `REQS007` (or the older `AUTH010`) from `extract`: read its `reason`. `domain_not_prepared`: prepare the domain with `prepare_domain` and wait for `prepared_domain_status` to say `ready`. `page_not_recognised`: try a product, article or listing page, or `mode='css'`; don't prepare the domain again. `domain_not_enabled`: use `mode='css'`. Not charged in any case. Details in the `zenrows-extract` skill.
 - Look up any other error code at https://docs.zenrows.com.
 
 ## Concurrency

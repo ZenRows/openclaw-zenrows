@@ -1,6 +1,6 @@
 {
   "name": "@zenrows/openclaw-zenrows",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Web data for OpenClaw: scrape, extract and browser automation through the Zenrows MCP server.",
   "license": "MIT",
   "author": "Zenrows <support@zenrows.com>",
